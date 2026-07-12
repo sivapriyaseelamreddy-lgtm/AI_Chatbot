@@ -1,5 +1,6 @@
 
-# K-Hub AI Chatbot
+# AI_Chatbot
+
 
 > A full-stack AI chatbot web application powered by **Groq** and built with **Flask + SQLite**.
 > Features a stunning **Copilot-inspired dark UI** with conversation history, context memory, and stream-like animations.
