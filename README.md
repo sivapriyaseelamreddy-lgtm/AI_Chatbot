@@ -58,7 +58,7 @@ AI_Chatbot/
 ### 1. Clone / Download the project
 
 ```bash
-cd "k hub chatbot"
+cd "AI_Chatbot"
 ```
 
 ### 2. Create a Virtual Environment
