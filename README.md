@@ -29,7 +29,7 @@
 | Markdown Rendering | ✅ |
 
 ## 📁 Project Structure
-k hub chatbot/
+AI_Chatbot/
 │
 ├── app.py               # Flask application & API routes
 ├── config.py            # Configuration (API keys, model, DB path)
