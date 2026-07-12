@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K-Hub AI Assistant</title>
+  <meta name="description" content="K-Hub AI Chatbot – a fresh new chat UI for your local assistant." />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand-block">
+          <div class="brand-mark">K</div>
+          <div>
+            <h1>K-Hub AI</h1>
+            <p>Fast, clean chat interface</p>
+          </div>
+        </div>
+
+        <button id="newChatBtn" class="button button-primary">New chat</button>
+
+        <div class="search-block">
+          <input id="searchInput" type="text" placeholder="Search chats..." autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="conversation-list" id="conversationList">
+        <div class="empty-state" id="emptyState">
+          <strong>No conversations yet.</strong>
+          <span>Click ‘New chat’ to begin.</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="chat-header">
+        <div>
+          <h2 id="chatTitle">Welcome to K-Hub AI</h2>
+          <p id="chatSubtitle">This is your refreshed chat UI. Start a conversation now.</p>
+        </div>
+        <button id="deleteChatBtn" class="button button-danger hidden">Delete chat</button>
+      </header>
+
+      <section class="message-area">
+        <div class="welcome-card" id="welcomeCard">
+          <h3>New UI Activated</h3>
+          <p>Ask anything and the assistant will answer in the conversation panel.</p>
+        </div>
+
+        <div class="chat-window hidden" id="chatScreen">
+          <div id="messagesContainer" class="messages-container"></div>
+        </div>
+      </section>
+
+      <footer class="chat-footer">
+        <textarea id="messageInput" placeholder="Type your message..." rows="1"></textarea>
+        <button id="sendBtn" class="button button-primary" disabled>Send</button>
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast hidden" id="toast"><span id="toastMsg"></span></div>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
