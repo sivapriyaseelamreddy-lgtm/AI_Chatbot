@@ -2,6 +2,9 @@
   currentConvId: null,
   allConversations: [],
   isLoading: false,
+  theme: "dark",
+  isListening: false,
+  recognition: null,
 };
 
 async function loadConversations() {
@@ -28,7 +31,7 @@ function renderConversationList(conversations) {
       <div>
         <div class="conv-item-title">${escapeHtml(conv.title || "New Chat")}</div>
       </div>
-      <button class="conv-delete" type="button" aria-label="Delete conversation">×</button>
+      <button class="conv-delete" type="button" aria-label="Delete conversation">🗑</button>
     `;
     item.addEventListener("click", (event) => {
       if (event.target.closest(".conv-delete")) return;
@@ -67,6 +70,7 @@ async function handleNewChat() {
     setChatTitle("New Chat", "Send your first message to begin.");
     showChatScreen();
     clearMessages();
+    updateEmptyChatState(true);
     updateDeleteButton(true);
     focusInput();
   } catch (error) {
@@ -105,6 +109,8 @@ async function handleSend() {
   input.value = "";
   resizeInput();
   document.getElementById("sendBtn").disabled = true;
+  showChatScreen();
+  updateEmptyChatState(false);
   appendMessage("user", text, new Date().toISOString());
   scrollMessages();
   showTyping(true);
@@ -135,14 +141,46 @@ async function handleSend() {
   }
 }
 
+function createActionButton(label, ariaLabel, onClick) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "copy-answer";
+  button.textContent = label;
+  button.setAttribute("aria-label", ariaLabel);
+  button.addEventListener("click", onClick);
+  return button;
+}
+
 function appendMessage(role, content) {
   const container = document.getElementById("messagesContainer");
   const message = document.createElement("div");
   message.className = `message-item ${role === "assistant" ? "message-ai" : "message-user"}`;
-  message.innerHTML = `
-    <div class="message-meta"><span>${role === "assistant" ? "K-Hub AI" : "You"}</span></div>
-    <div class="message-content">${escapeHtml(content).replace(/\n/g, "<br>")}</div>
-  `;
+  const meta = document.createElement("div");
+  meta.className = "message-meta";
+  const roleLabel = document.createElement("span");
+  roleLabel.textContent = role === "assistant" ? "K-Hub AI" : "You";
+  meta.appendChild(roleLabel);
+
+  const contentBlock = document.createElement("div");
+  contentBlock.className = "message-content";
+  contentBlock.innerHTML = escapeHtml(content).replace(/\n/g, "<br>");
+
+  message.appendChild(meta);
+  message.appendChild(contentBlock);
+
+  if (role === "assistant") {
+    const copyButton = createActionButton("📋 Copy", "Copy assistant answer", async () => {
+      try {
+        await navigator.clipboard.writeText(content);
+        showToast("Answer copied to clipboard.");
+      } catch (error) {
+        console.error(error);
+        showToast("Unable to copy answer.");
+      }
+    });
+    meta.appendChild(copyButton);
+  }
+
   container.appendChild(message);
 }
 
@@ -158,13 +196,90 @@ function appendErrorMessage(message) {
   container.appendChild(alert);
 }
 
+function updateEmptyChatState(show) {
+  document.getElementById("emptyChatState").classList.toggle("hidden", !show);
+  document.getElementById("messagesContainer").classList.toggle("hidden", show);
+}
+
 function renderMessages(messages) {
   clearMessages();
+  if (!messages || messages.length === 0) {
+    updateEmptyChatState(true);
+    return;
+  }
+  updateEmptyChatState(false);
   messages.forEach((msg) => appendMessage(msg.role, msg.message, msg.timestamp));
+}
+
+function initVoiceRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return null;
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = navigator.language || "en-US";
+  recognition.interimResults = false;
+  recognition.continuous = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    state.isListening = true;
+    document.getElementById("micBtn").textContent = "⏹️";
+    showToast("Listening... speak now.");
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    const input = document.getElementById("messageInput");
+    input.value = transcript;
+    resizeInput();
+    document.getElementById("sendBtn").disabled = false;
+    handleSend();
+  };
+
+  recognition.onend = () => {
+    state.isListening = false;
+    document.getElementById("micBtn").textContent = "🎙️";
+  };
+
+  recognition.onerror = (event) => {
+    state.isListening = false;
+    document.getElementById("micBtn").textContent = "🎙️";
+    showToast(`Voice input failed: ${event.error}`);
+  };
+
+  return recognition;
+}
+
+function toggleVoicePrompt() {
+  if (!state.recognition) {
+    state.recognition = initVoiceRecognition();
+  }
+  if (!state.recognition) {
+    showToast("Voice input is not supported in this browser.");
+    return;
+  }
+
+  if (state.isListening) {
+    state.recognition.stop();
+    return;
+  }
+
+  state.recognition.start();
 }
 
 function clearMessages() {
   document.getElementById("messagesContainer").innerHTML = "";
+}
+
+async function sendSuggestionPrompt(prompt) {
+  if (!state.currentConvId) {
+    await handleNewChat();
+  }
+  const input = document.getElementById("messageInput");
+  input.value = prompt;
+  resizeInput();
+  document.getElementById("sendBtn").disabled = false;
+  await handleSend();
 }
 
 function setChatTitle(title, subtitle) {
@@ -223,6 +338,23 @@ function updateDeleteButton(show) {
   document.getElementById("deleteChatBtn").classList.toggle("hidden", !show);
 }
 
+function setTheme(theme) {
+  const body = document.body;
+  state.theme = theme;
+  const button = document.getElementById("themeToggleBtn");
+  if (theme === "light") {
+    body.classList.add("light-theme");
+    button.textContent = "☀️";
+  } else {
+    body.classList.remove("light-theme");
+    button.textContent = "🌙";
+  }
+}
+
+function toggleTheme() {
+  setTheme(state.theme === "dark" ? "light" : "dark");
+}
+
 function focusInput() {
   const input = document.getElementById("messageInput");
   input.focus();
@@ -273,10 +405,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   document.getElementById("searchInput").addEventListener("input", handleSearch);
+  document.getElementById("themeToggleBtn").addEventListener("click", toggleTheme);
+  document.getElementById("micBtn").addEventListener("click", toggleVoicePrompt);
+  document.getElementById("chatScreen").addEventListener("click", (event) => {
+    if (event.target.matches(".suggestion-btn")) {
+      sendSuggestionPrompt(event.target.textContent);
+    }
+  });
   document.getElementById("deleteChatBtn").addEventListener("click", () => deleteConversation(state.currentConvId));
-  loadConversations().then(() => {
+  setTheme("dark");
+  loadConversations().then(async () => {
     if (!state.currentConvId) {
-      showWelcomeScreen();
+      await handleNewChat();
     }
   });
 });
