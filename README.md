@@ -1,15 +1,14 @@
-
 # AI_Chatbot
 
-
-> A full-stack AI chatbot web application powered by **Groq** and built with **Flask + SQLite**.
-> Features a stunning **Copilot-inspired dark UI** with conversation history, context memory, and stream-like animations.
+> A full-stack AI chatbot web application built using **Flask + SQLite + Groq API**.  
+> It provides a Copilot-inspired dark UI with conversation history, context memory, and smooth chat interactions.
 
 ---
 
 ## 🚀 Features
 
 | Feature | Status |
+|---|---|
 | AI Chat (Groq API) | ✅ |
 | Conversation History | ✅ |
 | Context Memory | ✅ |
@@ -17,99 +16,152 @@
 | View Previous Chats | ✅ |
 | Delete Conversation | ✅ |
 | SQLite Database | ✅ |
-| Dark Copilot-Inspired UI | ✅ |
+| Copilot-Inspired Dark UI | ✅ |
 | Typing Animation | ✅ |
 | Stream-like Response Animation | ✅ |
-| Auto-Scroll | ✅ |
+| Auto Scroll | ✅ |
 | Search Chats | ✅ |
 | Responsive Design | ✅ |
 | Error Handling | ✅ |
-| Sidebar | ✅ |
-| Auto-generated Chat Titles | ✅ |
+| Sidebar Navigation | ✅ |
+| Auto Generated Chat Titles | ✅ |
 | Markdown Rendering | ✅ |
 
-## 📁 Project Structure
+---
+
+# 📁 Project Structure
+
+```
 AI_Chatbot/
 │
-├── app.py               # Flask application & API routes
-├── config.py            # Configuration (API keys, model, DB path)
-├── requirements.txt     # Python dependencies
-├── .env                 # Environment variables (create this!)
+├── app.py                  # Flask application entry point
+├── config.py               # Configuration settings
+├── requirements.txt        # Python dependencies
+├── .env                    # Environment variables (create manually)
 ├── README.md
 │
 ├── database/
-│   ├── database.py      # SQLite operations
-│   └── chatbot.db       # Auto-created SQLite database
+│   ├── database.py         # SQLite database operations
+│   └── chatbot.db          # Auto-created database
 │
 ├── templates/
-│   └── index.html       # Main HTML template
+│   └── index.html          # Main chatbot UI
 │
 ├── static/
 │   ├── css/
-│   │   └── style.css    # Copilot-inspired dark theme
+│   │   └── style.css       # UI styling
+│   │
 │   └── js/
-│       └── script.js    # Frontend logic
+│       └── script.js       # Frontend JavaScript logic
 │
 └── chat/
-    └── groq_chat.py     # Groq API integration
-
-## ⚙️ Installation & Setup
-
-### 1. Clone / Download the project
-
-```bash
-cd "AI_Chatbot"
+    └── groq_chat.py        # Groq API integration
 ```
 
-### 2. Create a Virtual Environment
+---
+
+# ⚙️ Installation & Setup
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/sivapriyaseelamreddy-lgtm/AI_Chatbot.git
+```
+
+Move into the project folder:
+
+```bash
+cd AI_Chatbot
+```
+
+---
+
+## 2. Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate it:
-- **Windows:** `venv\Scripts\activate`
-- **Mac/Linux:** `source venv/bin/activate`
+Activate virtual environment:
 
-### 3. Install Dependencies
+### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+### Mac/Linux
+
+```bash
+source venv/bin/activate
+```
+
+---
+
+## 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set Up Your Groq API Key
+---
 
-Create a `.env` file in the project root:
+# 🔑 4. Configure API Key
+
+Create a `.env` file inside the project root directory.
+
+Add your Groq API key:
 
 ```env
-GROQ_API_KEY=your_actual_groq_api_key_here
+GROQ_API_KEY=your_actual_api_key_here
 ```
 
-Get your free API key at: https://console.groq.com
+Get your API key from:
 
-### 5. Run the Application
+https://console.groq.com
+
+---
+
+# ▶️ 5. Run the Application
+
+Start Flask server:
 
 ```bash
 python app.py
 ```
 
-### 6. Open in Browser
+---
 
-Navigate to: **http://127.0.0.1:5000**
+# 🌐 6. Open Application
 
+Open your browser and visit:
 
-## 🔌 API Endpoints
+```
+http://127.0.0.1:5000
+```
+
+---
+
+# 🔌 API Endpoints
 
 | Method | Endpoint | Description |
-| `GET` | `/` | Serve the main UI |
-| `POST` | `/api/new-chat` | Create a new conversation |
-| `POST` | `/api/chat` | Send a message & get AI reply |
-| `GET` | `/api/conversations` | Get all conversations |
-| `GET` | `/api/conversation/<id>` | Get a specific conversation |
-| `DELETE` | `/api/conversation/<id>` | Delete a conversation |
+|---|---|---|
+| GET | `/` | Load chatbot interface |
+| POST | `/api/new-chat` | Create new conversation |
+| POST | `/api/chat` | Send message and receive AI response |
+| GET | `/api/conversations` | Get chat history |
+| GET | `/api/conversation/<id>` | View specific conversation |
+| DELETE | `/api/conversation/<id>` | Delete conversation |
 
+---
 
-## 🗄️ Database Schema
+# 🗄️ Database
+
+This project uses SQLite database.
+
+Tables:
+
+### Conversations
 
 ```sql
 CREATE TABLE conversations (
@@ -117,35 +169,55 @@ CREATE TABLE conversations (
     title TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+```
 
+### Messages
+
+```sql
 CREATE TABLE messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     conversation_id INTEGER,
     role TEXT,
     message TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (conversation_id) REFERENCES conversations (id) ON DELETE CASCADE
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-## 🤖 AI Provider
+---
 
-- **Groq API** (AI model configurable through the backend)
+# 🤖 AI Technology
 
-## 📝 Environment Variables
+- Groq API
+- Large Language Model Integration
+- Context-aware conversations
 
-| Variable | Description |
-| `GROQ_API_KEY` | Your Groq API key (required) |
+---
 
+# 🛡️ Security Notes
 
-## 🛡️ Security Notes
+- Never upload `.env` file to GitHub
+- Keep API keys private
+- Add sensitive files to `.gitignore`
 
-- Never commit your `.env` file to version control
-- Add `.env` to your `.gitignore`
-- The API key is loaded securely via `python-dotenv`
+---
 
+# 🛠️ Technologies Used
 
-*Built with ❤️ using Flask, Groq, and vanilla HTML/CSS/JS*
-=======
-# AI_Chatbot
->>>>>>> 54b15104c2bf64f57de4055570d40d9ef4399100
+### Backend
+- Python
+- Flask
+- SQLite
+
+### Frontend
+- HTML5
+- CSS
+- JavaScript
+
+### AI
+- Groq API
+
+---
+
+## 👩‍💻 Author
+
+Built with ❤️ using Flask, Groq API, SQLite, HTML, CSS and JavaScript.
