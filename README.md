@@ -5,29 +5,6 @@
 
 ---
 
-## 🚀 Features
-
-| Feature | Status |
-|---|---|
-| AI Chat (Groq API) | ✅ |
-| Conversation History | ✅ |
-| Context Memory | ✅ |
-| New Chat | ✅ |
-| View Previous Chats | ✅ |
-| Delete Conversation | ✅ |
-| SQLite Database | ✅ |
-| Copilot-Inspired Dark UI | ✅ |
-| Typing Animation | ✅ |
-| Stream-like Response Animation | ✅ |
-| Auto Scroll | ✅ |
-| Search Chats | ✅ |
-| Responsive Design | ✅ |
-| Error Handling | ✅ |
-| Sidebar Navigation | ✅ |
-| Auto Generated Chat Titles | ✅ |
-| Markdown Rendering | ✅ |
-
----
 
 # 📁 Project Structure
 
